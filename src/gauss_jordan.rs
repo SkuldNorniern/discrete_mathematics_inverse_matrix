@@ -1,10 +1,15 @@
 // Gauss-Jordan elimination for inverse matrix calculation
 use crate::Matrix;
 use crate::MatrixError;
+use crate::print_matrix;
 
 // Get the augmented matrix [A | I] for Gauss-Jordan elimination
 fn get_augmented_matrix(matrix: &Matrix) -> Result<Matrix, MatrixError> {
     let n = matrix.len();
+    if cfg!(debug_assertions) {
+        println!("원래 행렬:");
+        print_matrix(matrix);
+    }
 
     if n == 0 || matrix[0].len() != n {
         return Err(MatrixError::NotSquare);
@@ -19,13 +24,22 @@ fn get_augmented_matrix(matrix: &Matrix) -> Result<Matrix, MatrixError> {
         // Identity matrix on the right
         augmented[i][n + i] = 1.0;
     }
-
+    if cfg!(debug_assertions) {
+        println!("확장된 행렬:");
+        print_matrix(&augmented);
+    }
     Ok(augmented)
 }
 
 // Find the pivot row (row with largest absolute value in column)
 fn find_pivot_row(augmented: &Matrix, col: usize, start_row: usize) -> usize {
     let n = augmented.len();
+    if cfg!(debug_assertions) {
+        println!("원래 행렬의 열:");
+        for i in 0..n {
+            println!("{:?}", augmented[i][col]);
+        }
+    }
     let mut max_row = start_row;
 
     for row in start_row + 1..n {
@@ -33,13 +47,19 @@ fn find_pivot_row(augmented: &Matrix, col: usize, start_row: usize) -> usize {
             max_row = row;
         }
     }
-
+    if cfg!(debug_assertions) {
+        println!("최대 행: {}", max_row);
+    }
     max_row
 }
 
 // Eliminate a column using the pivot row
 fn eliminate_column(augmented: &mut Matrix, pivot_row: usize, col: usize) -> Result<(), MatrixError> {
     let n = augmented.len();
+    if cfg!(debug_assertions) {
+        println!("원래 행렬:");
+        print_matrix(augmented);
+    }
 
     // Check if matrix is singular (pivot is too small)
     if augmented[pivot_row][col].abs() < 1e-10 {
@@ -61,13 +81,21 @@ fn eliminate_column(augmented: &mut Matrix, pivot_row: usize, col: usize) -> Res
             }
         }
     }
-
+    if cfg!(debug_assertions) {
+        println!("소거 후 행렬:");
+        print_matrix(augmented);
+    }
     Ok(())
 }
 
 // Perform forward elimination on the augmented matrix
 fn forward_elimination(augmented: &mut Matrix) -> Result<(), MatrixError> {
     let n = augmented.len();
+
+    if cfg!(debug_assertions) {
+        println!("전체 소거 전 행렬:");
+        print_matrix(augmented);
+    }
 
     for col in 0..n {
         // Find pivot row
@@ -81,7 +109,10 @@ fn forward_elimination(augmented: &mut Matrix) -> Result<(), MatrixError> {
         // Eliminate column
         eliminate_column(augmented, col, col)?;
     }
-
+    if cfg!(debug_assertions) {
+        println!("전체 소거 후 행렬:");
+        print_matrix(augmented);
+    }
     Ok(())
 }
 
