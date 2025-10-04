@@ -2,19 +2,30 @@ mod determinant;
 mod gauss_jordan;
 
 use std::io::{self, Write};
+use std::env;
 
-use discrete_mathematics_inverse_matrix::{Matrix, MatrixError, print_matrix};
+use discrete_mathematics_inverse_matrix::{Matrix, MatrixError, print_matrix, print_matrix_fraction, matrix_to_fraction};
 
 fn main() {
     println!("=== Inverse Matrix Calculator ===\n");
     
-    match run() {
+    // Parse command-line arguments for fraction flag
+    let args: Vec<String> = env::args().collect();
+    let use_fractions = args.iter().any(|arg| arg == "--fraction" || arg == "-f");
+    
+    if use_fractions {
+        println!("Mode: 분수 사용\n");
+    } else {
+        println!("Mode: 실수 사용n");
+    }
+    
+    match run(use_fractions) {
         Ok(_) => {},
         Err(e) => eprintln!("Error: {}", e),
     }
 }
 
-fn run() -> Result<(), String> {
+fn run(use_fractions: bool) -> Result<(), String> {
     // Read matrix size
     let n = read_matrix_size()?;
     
@@ -23,17 +34,33 @@ fn run() -> Result<(), String> {
     let matrix = read_matrix(n)?;
     
     println!("\n=== Input Matrix ===");
-    print_matrix(&matrix);
+    if use_fractions {
+        let frac_matrix = matrix_to_fraction(&matrix);
+        print_matrix_fraction(&frac_matrix);
+    } else {
+        print_matrix(&matrix);
+    }
     
     // Calculate inverse using determinant method
     println!("\n=== Method 1: Using Determinant ===");
     let det = determinant::determinant(&matrix).map_err(|_| "Failed to calculate determinant")?;
-    println!("Determinant: {}", det);
+    
+    if use_fractions {
+        let det_frac = discrete_mathematics_inverse_matrix::Fraction::from_f64(det);
+        println!("Determinant: {}", det_frac);
+    } else {
+        println!("Determinant: {}", det);
+    }
     
     let inverse1 = match determinant::inverse(&matrix) {
         Ok(inv) => {
             println!("\nInverse matrix:");
-            print_matrix(&inv);
+            if use_fractions {
+                let frac_inv = matrix_to_fraction(&inv);
+                print_matrix_fraction(&frac_inv);
+            } else {
+                print_matrix(&inv);
+            }
             Some(inv)
         },
         Err(MatrixError::SingularMatrix) => {
@@ -50,7 +77,12 @@ fn run() -> Result<(), String> {
     let inverse2 = match gauss_jordan::inverse(&matrix) {
         Ok(inv) => {
             println!("Inverse matrix:");
-            print_matrix(&inv);
+            if use_fractions {
+                let frac_inv = matrix_to_fraction(&inv);
+                print_matrix_fraction(&frac_inv);
+            } else {
+                print_matrix(&inv);
+            }
             Some(inv)
         },
         Err(MatrixError::SingularMatrix) => {
