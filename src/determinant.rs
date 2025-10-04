@@ -68,7 +68,6 @@ fn cofactor_matrix(matrix: &Matrix) -> Result<Matrix, MatrixError> {
     Ok(cofactor)
 }
 
-
 // Transpose matrix
 fn transpose(matrix: &Matrix) -> Matrix {
     let n = matrix.len();
@@ -83,3 +82,32 @@ fn transpose(matrix: &Matrix) -> Matrix {
     result
 }
 
+// Calculate inverse matrix using determinant and adjugate matrix
+pub fn inverse(matrix: &Matrix) -> Result<Matrix, MatrixError> {
+    let det = determinant(matrix)?;
+    
+    if det.abs() < 1e-10 {
+        return Err(MatrixError::SingularMatrix);
+    }
+    
+    let n = matrix.len();
+    
+    // Special case for 1x1 matrix
+    if n == 1 {
+        return Ok(vec![vec![1.0 / matrix[0][0]]]);
+    }
+    
+    // Calculate adjugate matrix (transpose of cofactor matrix)
+    let cofactor = cofactor_matrix(matrix)?;
+    let adjugate = transpose(&cofactor);
+    
+    // Divide by determinant
+    let mut result = vec![vec![0.0; n]; n];
+    for i in 0..n {
+        for j in 0..n {
+            result[i][j] = adjugate[i][j] / det;
+        }
+    }
+    
+    Ok(result)
+}
