@@ -1,3 +1,35 @@
+use crate::Matrix;
+use crate::MatrixError;
+
+// Calculate determinant recursively using cofactor expansion
+pub fn determinant(matrix: &Matrix) -> Result<f64, MatrixError> {
+    let n = matrix.len();
+    
+    if n == 0 || matrix[0].len() != n {
+        return Err(MatrixError::NotSquare);
+    }
+    
+    if n == 1 {
+        return Ok(matrix[0][0]);
+    }
+    
+    if n == 2 {
+        return Ok(matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0]);
+    }
+    
+    let mut det = 0.0;
+    
+    // Expand along the first row
+    for col in 0..n {
+        let minor = get_minor(matrix, 0, col);
+        let cofactor = if col % 2 == 0 { 1.0 } else { -1.0 };
+        det += cofactor * matrix[0][col] * determinant(&minor)?;
+    }
+    
+    Ok(det)
+}
+
+
 // Get minor matrix by removing specified row and column
 fn get_minor(matrix: &Matrix, row: usize, col: usize) -> Matrix {
     let n = matrix.len();
@@ -33,3 +65,4 @@ fn transpose(matrix: &Matrix) -> Matrix {
     
     result
 }
+
