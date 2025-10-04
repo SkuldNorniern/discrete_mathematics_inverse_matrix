@@ -3,8 +3,7 @@ mod gauss_jordan;
 
 use std::io::{self, Write};
 
-use discrete_mathematics_inverse_matrix::Matrix;
-use discrete_mathematics_inverse_matrix::MatrixError;
+use discrete_mathematics_inverse_matrix::{Matrix, MatrixError, print_matrix};
 
 fn main() {
     println!("=== Inverse Matrix Calculator ===\n");
