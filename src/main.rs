@@ -102,7 +102,7 @@ fn run(use_fractions: bool) -> Result<(), String> {
         if matrices_equal(&inv1, &inv2) {
             println!("두 방법이 동일한 결과를 도출");
         } else {
-            println!("두 방법이 다른 결과를 도출 (수치 허용 오차 내에서).");
+            return Err("두 방법이 다른 결과를 도출 (수치 허용 오차 내에서).".to_string());
         }
 
         // Verify inverse by multiplying A * A^(-1) = I
