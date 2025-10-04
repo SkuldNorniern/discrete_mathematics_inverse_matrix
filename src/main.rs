@@ -67,9 +67,9 @@ fn run() -> Result<(), String> {
     if let (Some(inv1), Some(inv2)) = (inverse1, inverse2) {
         println!("\n=== Comparison ===");
         if matrices_equal(&inv1, &inv2) {
-            println!("The two methods produced identical results.");
+            println!("두 방법이 동일한 결과를 도출");
         } else {
-            println!("The two methods produced different results (within numerical tolerance).");
+            println!("두 방법이 다른 결과를 도출 (수치 허용 오차 내에서).");
         }
     }
     
