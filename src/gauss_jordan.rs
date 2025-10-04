@@ -54,7 +54,11 @@ fn find_pivot_row(augmented: &Matrix, col: usize, start_row: usize) -> usize {
 }
 
 // Eliminate a column using the pivot row
-fn eliminate_column(augmented: &mut Matrix, pivot_row: usize, col: usize) -> Result<(), MatrixError> {
+fn eliminate_column(
+    augmented: &mut Matrix,
+    pivot_row: usize,
+    col: usize,
+) -> Result<(), MatrixError> {
     let n = augmented.len();
     if cfg!(debug_assertions) {
         println!("원래 행렬:");
@@ -116,7 +120,6 @@ fn forward_elimination(augmented: &mut Matrix) -> Result<(), MatrixError> {
     Ok(())
 }
 
-
 // Calculate inverse matrix using Gauss-Jordan elimination
 pub fn inverse(matrix: &Matrix) -> Result<Matrix, MatrixError> {
     // Create augmented matrix [A | I]
@@ -134,7 +137,6 @@ pub fn inverse(matrix: &Matrix) -> Result<Matrix, MatrixError> {
             result[i][j] = augmented[i][n + j];
         }
     }
-
 
     Ok(result)
 }

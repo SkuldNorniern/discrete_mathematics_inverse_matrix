@@ -18,7 +18,10 @@ impl Fraction {
         if denominator == 0 {
             panic!("Denominator cannot be zero");
         }
-        let mut frac = Fraction { numerator, denominator };
+        let mut frac = Fraction {
+            numerator,
+            denominator,
+        };
         frac.simplify();
         frac
     }
@@ -95,11 +98,7 @@ impl std::fmt::Display for Fraction {
 
 // GCD calculation
 fn gcd(a: i64, b: i64) -> i64 {
-    if b == 0 {
-        a
-    } else {
-        gcd(b, a % b)
-    }
+    if b == 0 { a } else { gcd(b, a % b) }
 }
 
 // Convert float to rational using continued fractions

@@ -1,4 +1,4 @@
-use crate::{Matrix,MatrixError,print_matrix};
+use crate::{Matrix, MatrixError, print_matrix};
 
 // Calculate determinant recursively using cofactor expansion
 pub fn determinant(matrix: &Matrix) -> Result<f64, MatrixError> {
@@ -11,24 +11,27 @@ pub fn determinant(matrix: &Matrix) -> Result<f64, MatrixError> {
     if n == 0 || matrix[0].len() != n {
         return Err(MatrixError::NotSquare);
     }
-    
+
     if n == 1 {
         if cfg!(debug_assertions) {
             println!("1x1 행렬의 행렬식: {}", matrix[0][0]);
         }
         return Ok(matrix[0][0]);
     }
-    
+
     if n == 2 {
         let det = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
         if cfg!(debug_assertions) {
-            println!("2x2 행렬의 행렬식: ({} * {}) - ({} * {}) = {}", matrix[0][0], matrix[1][1], matrix[0][1], matrix[1][0], det);
+            println!(
+                "2x2 행렬의 행렬식: ({} * {}) - ({} * {}) = {}",
+                matrix[0][0], matrix[1][1], matrix[0][1], matrix[1][0], det
+            );
         }
         return Ok(det);
     }
-    
+
     let mut det = 0.0;
-    
+
     // Expand along the first row
     for col in 0..n {
         let minor = get_minor(matrix, 0, col);
@@ -41,7 +44,6 @@ pub fn determinant(matrix: &Matrix) -> Result<f64, MatrixError> {
     Ok(det)
 }
 
-
 // Get minor matrix by removing specified row and column
 fn get_minor(matrix: &Matrix, row: usize, col: usize) -> Matrix {
     let n = matrix.len();
@@ -51,7 +53,7 @@ fn get_minor(matrix: &Matrix, row: usize, col: usize) -> Matrix {
         print_matrix(matrix);
     }
     let mut minor = Vec::new();
-    
+
     for i in 0..n {
         if i == row {
             continue;
@@ -102,7 +104,7 @@ fn transpose(matrix: &Matrix) -> Matrix {
         print_matrix(matrix);
     }
     let mut result = vec![vec![0.0; n]; n];
-    
+
     for i in 0..n {
         for j in 0..n {
             result[j][i] = matrix[i][j];
@@ -119,23 +121,22 @@ fn transpose(matrix: &Matrix) -> Matrix {
 pub fn inverse(matrix: &Matrix) -> Result<Matrix, MatrixError> {
     let det = determinant(matrix)?;
 
-    
     // Check if matrix is singular
     if det.abs() < 1e-10 {
         return Err(MatrixError::SingularMatrix);
     }
-    
+
     let n = matrix.len();
-    
+
     // Special case for 1x1 matrix (return identity matrix)
     if n == 1 {
         return Ok(vec![vec![1.0 / matrix[0][0]]]);
     }
-    
+
     // Calculate adjugate matrix (transpose of cofactor matrix)
     let cofactor = cofactor_matrix(matrix)?;
     let adjugate = transpose(&cofactor);
-    
+
     // Divide by determinant to get inverse matrix
     let mut result = vec![vec![0.0; n]; n];
     for i in 0..n {
