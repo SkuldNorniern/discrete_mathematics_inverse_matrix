@@ -52,6 +52,23 @@ fn get_minor(matrix: &Matrix, row: usize, col: usize) -> Matrix {
     minor
 }
 
+// Calculate cofactor matrix
+fn cofactor_matrix(matrix: &Matrix) -> Result<Matrix, MatrixError> {
+    let n = matrix.len();
+    let mut cofactor = vec![vec![0.0; n]; n];
+    
+    for i in 0..n {
+        for j in 0..n {
+            let minor = get_minor(matrix, i, j);
+            let sign = if (i + j) % 2 == 0 { 1.0 } else { -1.0 };
+            cofactor[i][j] = sign * determinant(&minor)?;
+        }
+    }
+    
+    Ok(cofactor)
+}
+
+
 // Transpose matrix
 fn transpose(matrix: &Matrix) -> Matrix {
     let n = matrix.len();
