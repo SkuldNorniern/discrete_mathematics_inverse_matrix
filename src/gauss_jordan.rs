@@ -36,3 +36,31 @@ fn find_pivot_row(augmented: &Matrix, col: usize, start_row: usize) -> usize {
 
     max_row
 }
+
+// Eliminate a column using the pivot row
+fn eliminate_column(augmented: &mut Matrix, pivot_row: usize, col: usize) -> Result<(), MatrixError> {
+    let n = augmented.len();
+
+    // Check if matrix is singular (pivot is too small)
+    if augmented[pivot_row][col].abs() < 1e-10 {
+        return Err(MatrixError::SingularMatrix);
+    }
+
+    // Scale pivot row to make pivot = 1
+    let pivot = augmented[pivot_row][col];
+    for j in 0..2 * n {
+        augmented[pivot_row][j] /= pivot;
+    }
+
+    // Eliminate column in all other rows
+    for row in 0..n {
+        if row != pivot_row {
+            let factor = augmented[row][col];
+            for j in 0..2 * n {
+                augmented[row][j] -= factor * augmented[pivot_row][j];
+            }
+        }
+    }
+
+    Ok(())
+}
