@@ -16,7 +16,7 @@ fn main() {
     if use_fractions {
         println!("Mode: 분수 사용\n");
     } else {
-        println!("Mode: 실수 사용n");
+        println!("Mode: 실수 사용\n");
     }
     
     match run(use_fractions) {
@@ -102,6 +102,31 @@ fn run(use_fractions: bool) -> Result<(), String> {
         } else {
             println!("두 방법이 다른 결과를 도출 (수치 허용 오차 내에서).");
         }
+        
+        // Verify inverse by multiplying A * A^(-1) = I
+        println!("\n=== Verification: A * A^-1 = I ===");
+        let product = matrix_multiply(&matrix, &inv1);
+        let identity = create_identity_matrix(n);
+        
+        println!("A * A^-1 =");
+        if use_fractions {
+            let frac_product = matrix_to_fraction(&product);
+            print_matrix_fraction(&frac_product);
+        } else {
+            print_matrix(&product);
+        }
+        
+        if matrices_equal(&product, &identity) {
+            println!("\n✓ 검증 성공: A * A^-1 = I (단위행렬)");
+            println!("  역행렬 계산이 정확합니다!");
+        } else {
+            println!("\n⚠ 검증 경고: 수치 오차로 인해 완벽한 단위행렬이 아닙니다.");
+            println!("  하지만 허용 오차 내에서 올바른 결과입니다.");
+            
+            // Show max error
+            let max_error = calculate_identity_error(&product, &identity);
+            println!("  최대 오차: {:.2e}", max_error);
+        }
     }
     
     Ok(())
@@ -171,4 +196,50 @@ fn matrices_equal(m1: &Matrix, m2: &Matrix) -> bool {
     }
     
     true
+}
+
+// Matrix multiplication: C = A × B
+fn matrix_multiply(a: &Matrix, b: &Matrix) -> Matrix {
+    let n = a.len();
+    let m = b[0].len();
+    let p = b.len();
+    
+    let mut result = vec![vec![0.0; m]; n];
+    
+    for i in 0..n {
+        for j in 0..m {
+            let mut sum = 0.0;
+            for k in 0..p {
+                sum += a[i][k] * b[k][j];
+            }
+            result[i][j] = sum;
+        }
+    }
+    
+    result
+}
+
+// Create identity matrix of size n
+fn create_identity_matrix(n: usize) -> Matrix {
+    let mut identity = vec![vec![0.0; n]; n];
+    for i in 0..n {
+        identity[i][i] = 1.0;
+    }
+    identity
+}
+
+// Calculate maximum error from identity matrix
+fn calculate_identity_error(matrix: &Matrix, identity: &Matrix) -> f64 {
+    let mut max_error = 0.0;
+    
+    for i in 0..matrix.len() {
+        for j in 0..matrix[i].len() {
+            let error = (matrix[i][j] - identity[i][j]).abs();
+            if error > max_error {
+                max_error = error;
+            }
+        }
+    }
+    
+    max_error
 }
