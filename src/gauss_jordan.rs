@@ -22,3 +22,17 @@ fn get_augmented_matrix(matrix: &Matrix) -> Result<Matrix, MatrixError> {
 
     Ok(augmented)
 }
+
+// Find the pivot row (row with largest absolute value in column)
+fn find_pivot_row(augmented: &Matrix, col: usize, start_row: usize) -> usize {
+    let n = augmented.len();
+    let mut max_row = start_row;
+
+    for row in start_row + 1..n {
+        if augmented[row][col].abs() > augmented[max_row][col].abs() {
+            max_row = row;
+        }
+    }
+
+    max_row
+}
