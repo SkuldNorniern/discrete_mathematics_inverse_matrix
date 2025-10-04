@@ -120,19 +120,6 @@ fn read_matrix(n: usize) -> Result<Matrix, String> {
     Ok(matrix)
 }
 
-fn print_matrix(matrix: &Matrix) {
-    for row in matrix {
-        print!("[");
-        for (j, val) in row.iter().enumerate() {
-            if j > 0 {
-                print!(" ");
-            }
-            print!("{:10.4}", val);
-        }
-        println!(" ]");
-    }
-}
-
 fn matrices_equal(m1: &Matrix, m2: &Matrix) -> bool {
     const EPSILON: f64 = 1e-6;
     
